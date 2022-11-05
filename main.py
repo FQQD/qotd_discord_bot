@@ -7,19 +7,23 @@ from datetime import datetime
 from pathlib import Path
 
 load_dotenv()
-TOKEN = 'YOUR_TOKEN'
+TOKEN = 'OTI4NTgzMDQ2NjMyOTg4NzEz.GXNvA9.jSSnCOgbm4sFzX1Hr2qhiX0DwRpsNcNZMajYcQ'
+#TOKEN = 'MTAxNTYxMDA4Mjk0MTIxODg5OA.Gp5Fqp.gnZ86rELf8hVPWrMOLIiReuW2xoIHC15TwpuUQ'
 
 
-client = commands.Bot(
+Bot = commands.Bot(
     command_prefix=disnake.ext.commands.when_mentioned,
     activity=disnake.Activity(type=disnake.ActivityType.watching, name="made by FQQD.ᴅᴇ")
 )
 
 #ID of channel where questions are posted
-target = YOUR_CHANNEL #fill in
+target = 1038473246359683083#fill in
+
+#ID of role that gets pinged when posting a question, leave blank string if no role should be pinged
+pingrole = ""
 
 #Hour QOTD is to be posted
-posttime = YOUR_POSTTIME #fill in
+posttime = 17#fill in
 
 embedcolor = disnake.Colour.green()
 
@@ -53,13 +57,17 @@ async def question_post(channel):
                 colour = embedcolor,
             )
             embed.set_author(name=f"Question Of The Day:", icon_url='https://imgur.com/iGasyeb.png')
-            embed.set_footer(text=f"Do you also submit a question? Use /add.")
-            await channel.send(embed=embed)
+            embed.set_footer(text=f"Do you also want to submit a question? Use /add.")
+            
+            if pingrole == "":
+                await channel.send(embed=embed)
+            else:
+                await channel.send(f"<@&{pingrole}>",embed=embed)
             
             message = channel.last_message
             await message.create_thread(
                 name=f"'{qotd}'",
-                auto_archive_duration=60,
+                auto_archive_duration=1440,
             )
         
             remove_question(qotd)
@@ -71,24 +79,24 @@ async def question_post(channel):
                 colour = errorembedcolor,
             )
             await channel.send(embed=embed)
-    print(f'{client.user} has posted a qotd!')
+    print(f'{Bot.user} has posted a qotd!')
 
 #Scheduled to call question of the day.
 @tasks.loop(minutes=60)
 async def task():
     if datetime.now().hour == posttime:
-        channel = client.get_channel(target)
+        channel = Bot.get_channel(target)
         await question_post(channel)
 
 #Make sure bot is online.
-@client.event
+@Bot.event
 async def on_ready():
-    print(f'{client.user} has connected to disnake! It is '+ str(datetime.now()))
+    print(f'{Bot.user} has connected to Discord! It is '+ str(datetime.now()))
     await task.start()
 
 #Reads for commands, which includes adding questions and testing
         
-@client.slash_command(name="add", description="Add QOTD")
+@Bot.slash_command(name="add", description="Add a QOTD to the list")
 async def add(inter, question):
     embed = disnake.Embed(
         title = f"Added QOTD! Thank you for submitting.",
@@ -99,10 +107,10 @@ async def add(inter, question):
     question_add(question)
     print(f'{inter.author} has added "{question}"!')
     
-@client.slash_command(name="test", description="Tests QOTD")
+@Bot.slash_command(name="send", description="Sends QOTD for testing")
 @commands.has_permissions(kick_members=True)
-async def test(inter):
-    channel = client.get_channel(target)
+async def send(inter):
+    channel = Bot.get_channel(target)
     await question_post(channel)
     embed = disnake.Embed(
         title = f"Success!",
@@ -111,11 +119,11 @@ async def test(inter):
     )
     await inter.send(embed=embed)
 
-@client.slash_command(name="say", description="Send a dummy message")
+@Bot.slash_command(name="say", description="Send a message containing the value")
 @commands.has_permissions(kick_members=True)
-async def say(inter, question):
-    channel = client.get_channel(target)
-    await channel.send(question)
+async def say(inter, channel_id, message):
+    channel = Bot.get_channel(int(channel_id))
+    await channel.send(message)
     embed = disnake.Embed(
         title = f"Success!",
         description = f"Sent the message.",
@@ -123,4 +131,4 @@ async def say(inter, question):
     )
     await inter.send(embed=embed)
 
-client.run(TOKEN)
+Bot.run(TOKEN)
