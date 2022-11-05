@@ -7,8 +7,7 @@ from datetime import datetime
 from pathlib import Path
 
 load_dotenv()
-TOKEN = 'OTI4NTgzMDQ2NjMyOTg4NzEz.GXNvA9.jSSnCOgbm4sFzX1Hr2qhiX0DwRpsNcNZMajYcQ'
-#TOKEN = 'MTAxNTYxMDA4Mjk0MTIxODg5OA.Gp5Fqp.gnZ86rELf8hVPWrMOLIiReuW2xoIHC15TwpuUQ'
+TOKEN = ''
 
 
 Bot = commands.Bot(
