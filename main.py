@@ -5,6 +5,7 @@ from disnake.ext import commands
 from dotenv import load_dotenv
 from datetime import datetime
 from pathlib import Path
+import aiohttp
 
 load_dotenv()
 TOKEN = ''
@@ -74,7 +75,7 @@ async def question_post(channel):
         except:
             embed = disnake.Embed(
                 title = f"QOTD: No questions left.",
-                description = f"Everyone submit one, using **/add**!",
+                description = f"Everyone submit one, using **/add**!\nInstead, here's a cat.",
                 colour = errorembedcolor,
             )
             async with aiohttp.ClientSession() as session:
