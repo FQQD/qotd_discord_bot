@@ -77,6 +77,10 @@ async def question_post(channel):
                 description = f"Everyone submit one, using **/add**!",
                 colour = errorembedcolor,
             )
+            async with aiohttp.ClientSession() as session:
+                request = await session.get('https://some-random-api.ml/animal/cat')
+                cat = await request.json()
+            embed.set_image(url=cat["image"])
             await channel.send(embed=embed)
     print(f'{Bot.user} has posted a qotd!')
 
